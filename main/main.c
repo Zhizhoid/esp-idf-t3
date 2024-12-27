@@ -18,7 +18,8 @@ const UBaseType_t LOG_INTERVAL_QUEUE_SIZE = 1024;
 const uint32_t COUNTER_INCR_INTERVAL_MS = 5000;
 const uint32_t LOG_CHECK_INTERVAL_MS = 100;
 const uint32_t BLINK_INTERVAL_MS = 1000;
-const uint32_t LED_ON_TIME_MS = 100;
+// const uint32_t LED_ON_TIME_MS = 200;
+const uint32_t LED_ON_TIME_MS = 500;
 
 static const char *TAG = "Main";
 
@@ -77,11 +78,13 @@ void app_main(void)
     xTaskCreate(counter_log_task, "COUNTER_LOG", COUNTER_LOG_TASK_STACK_DEPTH, NULL, 1, &counter_log_task_handle);
     xTaskCreate(blink_task, "BLINK", BLINK_TASK_STACK_DEPTH, NULL, 1, &blink_task_handle);
 
-    int64_t test;
-    while (true) {
-        if (xQueueReceive(log_interval_queue_handle, (void *)&test, 0)) {
-            printf("%lld\n", test);
-        }
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-    }
+    // TODO: delete this
+
+    // int64_t test;
+    // while (true) {
+    //     if (xQueueReceive(log_interval_queue_handle, (void *)&test, 0)) {
+    //         printf("%lld\n", test);
+    //     }
+    //     vTaskDelay(100 / portTICK_PERIOD_MS);
+    // }
 }
