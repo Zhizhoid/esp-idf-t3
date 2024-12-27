@@ -6,6 +6,8 @@
 #include "freertos/queue.h"
 #include "esp_timer.h"
 
+#include "blink.h"
+
 const uint32_t COUNTER_INCR_TASK_STACK_DEPTH = 4096;
 const uint32_t COUNTER_LOG_TASK_STACK_DEPTH = 4096;
 const uint32_t BLINK_TASK_STACK_DEPTH = 4096;
@@ -16,7 +18,7 @@ const UBaseType_t LOG_INTERVAL_QUEUE_SIZE = 1024;
 const uint32_t COUNTER_INCR_INTERVAL_MS = 5000;
 const uint32_t LOG_CHECK_INTERVAL_MS = 100;
 const uint32_t BLINK_INTERVAL_MS = 1000;
-const uint32_t LED_ON_TIME = 100;
+const uint32_t LED_ON_TIME_MS = 100;
 
 static const char *TAG = "Main";
 
@@ -63,16 +65,6 @@ static void counter_log_task(void *pvParameters) {
     }
 }
 
-static void blink_task(void *pvParameters) {
-    //TODO: configure LED
-    while (true) {
-        //...
-        vTaskDelay(LED_ON_TIME / portTICK_PERIOD_MS);
-        //...
-        vTaskDelay(BLINK_INTERVAL_MS - LED_ON_TIME / portTICK_PERIOD_MS);
-    }
-}
-
 void app_main(void)
 {
     counter_queue_handle = xQueueCreate(COUNTER_QUEUE_SIZE, sizeof(uint32_t));
@@ -85,11 +77,11 @@ void app_main(void)
     xTaskCreate(counter_log_task, "COUNTER_LOG", COUNTER_LOG_TASK_STACK_DEPTH, NULL, 1, &counter_log_task_handle);
     xTaskCreate(blink_task, "BLINK", BLINK_TASK_STACK_DEPTH, NULL, 1, &blink_task_handle);
 
-    // int64_t test;
-    // while (true) {
-    //     if (xQueueReceive(log_interval_queue_handle, (void *)&test, 0)) {
-    //         printf("%lld\n", test);
-    //     }
-    //     vTaskDelay(100 / portTICK_PERIOD_MS);
-    // }
+    int64_t test;
+    while (true) {
+        if (xQueueReceive(log_interval_queue_handle, (void *)&test, 0)) {
+            printf("%lld\n", test);
+        }
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
 }
