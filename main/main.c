@@ -15,11 +15,13 @@ const uint32_t BLINK_TASK_STACK_DEPTH = 4096;
 const UBaseType_t COUNTER_QUEUE_SIZE = 8;
 const UBaseType_t LOG_INTERVAL_QUEUE_SIZE = 1024;
 
+// If LOG_CHECK_INTERVAL_MS is > than COUNTER_INCR_INTERVAL_MS the counter_queue_handle will overflow
 const uint32_t COUNTER_INCR_INTERVAL_MS = 5000;
 const uint32_t LOG_CHECK_INTERVAL_MS = 100;
+
+// BLINK_INTERVAL_MS/portTICK_PERIOD_MS should be > than LED_ON_TIME_MS/portTICK_PERIOD_MS (using integer division)
 const uint32_t BLINK_INTERVAL_MS = 1000;
-// const uint32_t LED_ON_TIME_MS = 200;
-const uint32_t LED_ON_TIME_MS = 500;
+const uint32_t LED_ON_TIME_MS = 250;
 
 static const char *TAG = "Main";
 
@@ -28,6 +30,7 @@ static TaskHandle_t counter_log_task_handle = NULL;
 static TaskHandle_t blink_task_handle = NULL;
 
 static QueueHandle_t counter_queue_handle = NULL;
+// stores differences in time (in microseconds) of recieveing an element from counter_queue_handle
 static QueueHandle_t log_interval_queue_handle = NULL;
 
 static void counter_incr_task(void *pvParameters) {
@@ -74,17 +77,7 @@ void app_main(void)
     log_interval_queue_handle = xQueueCreate(LOG_INTERVAL_QUEUE_SIZE, sizeof(int64_t));
     assert(log_interval_queue_handle != NULL);
 
-    xTaskCreate(counter_incr_task, "COUNTER_INCR", COUNTER_INCR_TASK_STACK_DEPTH, NULL, 1, &counter_incr_task_handle);
-    xTaskCreate(counter_log_task, "COUNTER_LOG", COUNTER_LOG_TASK_STACK_DEPTH, NULL, 1, &counter_log_task_handle);
+    xTaskCreate(counter_incr_task, "COUNTER_INCR", COUNTER_INCR_TASK_STACK_DEPTH, NULL, 2, &counter_incr_task_handle);
+    xTaskCreate(counter_log_task, "COUNTER_LOG", COUNTER_LOG_TASK_STACK_DEPTH, NULL, 0, &counter_log_task_handle);
     xTaskCreate(blink_task, "BLINK", BLINK_TASK_STACK_DEPTH, NULL, 1, &blink_task_handle);
-
-    // TODO: delete this
-
-    // int64_t test;
-    // while (true) {
-    //     if (xQueueReceive(log_interval_queue_handle, (void *)&test, 0)) {
-    //         printf("%lld\n", test);
-    //     }
-    //     vTaskDelay(100 / portTICK_PERIOD_MS);
-    // }
 }
