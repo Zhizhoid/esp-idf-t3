@@ -71,7 +71,7 @@ git clone https://github.com/Zhizhoid/esp-idf-t3.git
 2. Build the project
 - Open ESP-IDF CMD:\
 ![image](readme_images/image.png)
-- In ESP-IDF CMD;
+- In ESP-IDF CMD:
 ```Shell
 cd %userprofile%\esp\esp-idf-t3
 idf.py set-target esp32c6
