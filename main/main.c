@@ -30,7 +30,7 @@ static TaskHandle_t counter_log_task_handle = NULL;
 static TaskHandle_t blink_task_handle = NULL;
 
 static QueueHandle_t counter_queue_handle = NULL;
-// stores differences in time (in microseconds) of recieveing an element from counter_queue_handle
+// stores differences in time (in microseconds) of receiveing an element from counter_queue_handle
 static QueueHandle_t log_interval_queue_handle = NULL;
 
 static void counter_incr_task(void *pvParameters) {
